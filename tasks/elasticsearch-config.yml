@@ -91,3 +91,10 @@
 
 - name: Delete Default JVM Options File (5.x)
   file: dest=/etc/elasticsearch/jvm.options state=absent
+
+# Create symlink jvm.options from {{conf_dir}}/jvm.options to /etc/elasticsearch/jvm.option(by https://www.elastic.co/guide/en/elasticsearch/reference/current/setting-system-settings.html#jvm-options)
+# /etc/elasticsearch/jvm.option == {{conf_dir}}/../jvm.options , by vars from this role
+- name: Symlink of jvm.options
+  file: src={{conf_dir}}/jvm.options dest={{conf_dir}}/../jvm.options owner={{ es_user }} group={{ es_group }} force=yes state=link
+  notify: restart elasticsearch
+  when: es_version | version_compare('5.0', '>=')
